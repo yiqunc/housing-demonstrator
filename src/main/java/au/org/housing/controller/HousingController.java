@@ -397,6 +397,7 @@ public class HousingController {
 	  }
   }
   
+  // call this method from /housing/housing-controller/clearAllOutputs to delete the output folders to save disk space 
   @RequestMapping(value = "/clearAllOutputs", method = RequestMethod.GET)
   public void clearAllOutputs(HttpServletRequest request,HttpServletResponse response){
 	

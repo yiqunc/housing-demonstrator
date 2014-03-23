@@ -164,26 +164,19 @@ public class DevelopmentPotentialServiceImpl implements DevelopmentPotentialServ
 		System.out.println(newFile.toURI());
 		
 		this.lgaFilter();
-		//System.out.println("==== reach here 0.1 "+ System.currentTimeMillis());
 		this.dpiFilter();
 		this.landUseFilter();
 		this.bufferAllParamsFilter();
-		//System.out.println("==== reach here 0.2 "+ System.currentTimeMillis());
 		this.ownershipFilter();		
-		//System.out.println("==== reach here 0.3 "+ System.currentTimeMillis());
 		this.propertyFilter();
-		//System.out.println("==== reach here 0.4 "+ System.currentTimeMillis());
 		if (!this.generateQuery(session)){
 			return false;
 		}
-		//System.out.println("==== reach here 0.5 "+ System.currentTimeMillis());
 		
 		this.overlayCollection();
-		//System.out.println("==== reach here 0.6 "+ System.currentTimeMillis());
 		if (!this.overlayIntersection(username, layer, session)){
 			return false;
 		}
-		//System.out.println("==== reach here 0.7 "+ System.currentTimeMillis());
 		String sldBody = GeoServerServiceImpl.potentialStyleStart + oldRules + GeoServerServiceImpl.potentialStyleEnd;
 		geoServerService.getGeoServer(workspace);
 		geoServerService.publishPotentialStyle(sldBody, styleName);
@@ -618,12 +611,7 @@ public class DevelopmentPotentialServiceImpl implements DevelopmentPotentialServ
 	private boolean generateQuery(HttpSession session) throws SQLException, Exception{
 		propertyQuery = new Query();
 		String geom_name = propertyFc.getSchema().getGeometryDescriptor().getLocalName();
-		//String[] attributes = {geom_name, outPutLayerConfig.getObjectid(), outPutLayerConfig.getPfi(), outPutLayerConfig.getLgaName()
-		//		, outPutLayerConfig.getStreet_name(), outPutLayerConfig.getStreet_type(), outPutLayerConfig.getSuburb()
-		//		, outPutLayerConfig.getPostcode(), outPutLayerConfig.getLand_area(), outPutLayerConfig.getAreameasure() };
-		
-		
-		//ali
+
 		String[] attributes = {geom_name, outPutLayerConfig.getObjectid(),outPutLayerConfig.getLand_area(), outPutLayerConfig.getSuburb()
 				, outPutLayerConfig.getPostcode()				
 				,outPutLayerConfig.getPfi(), outPutLayerConfig.getLgaName()
@@ -1275,186 +1263,11 @@ public class DevelopmentPotentialServiceImpl implements DevelopmentPotentialServ
 					}//end while					
 					propertyItnew.close();
 					
-					
-					 
 					if (!newList.isEmpty()){
 						System.out.println("properties.size() < 1000");
 						SimpleFeatureCollection featureCollectionNew = new ListFeatureCollection(featureTypeNew, newList);
 						exportService.featuresExportToShapeFile(featureTypeNew, featureCollectionNew,newFile, dropCreateSchema);
 					}	
-				
-				
-				
-		       ////end ali
-		     
-/////////////////////////////////////////////////////////////////////////////////////	
-				//Ghazal
-		
-			/*
-			int i = 0;
-	
-			
-			propertyOverlaysNum = -1;
-			while (propertyIt.hasNext()) {
-				
-				SimpleFeature sf = propertyIt.next();
-				sfb.addAll(sf.getAttributes());
-				Geometry propertyGeom = (Geometry) sf.getDefaultGeometry();
-				propertyGeom = propertyGeom.buffer(0.001);
-				if (anyOverlayChecked){
-					propertyOverlaysNum = 0;
-					// **************** Intersections ****************
-				    Geometry floodwaysUnion = (Geometry) overlayMap.get("floodways");					
-					if (floodwaysUnion != null) {			
-	
-						if (floodwaysUnion.intersects(propertyGeom)) {
-							sfb.set("OL_Floodway", Boolean.TRUE);
-							propertyOverlaysNum++;					
-						}					
-													
-					}	
-					
-					//Geometry inundationsUnion = (Geometry) overlayMap.get("inundations");					
-					if (inundationsUnion != null) {	
-					
-						if (inundationsUnion.intersects(propertyGeom)) {
-							sfb.set("OL_Inundation", Boolean.TRUE);	
-							propertyOverlaysNum++;
-							System.out.println(sf.getAttribute("pfi")+"  have intersection  with OL_Inundation  == ");							
-						}
-									
-					}
-					
-					Geometry neighborhoodsUnion = (Geometry) overlayMap.get("neighborhoods");
-					if (neighborhoodsUnion != null) {
-						if (neighborhoodsUnion.intersects(propertyGeom)) {
-							sfb.set("OL_Neighborhood", Boolean.TRUE);
-							propertyOverlaysNum++;
-							System.out.print("  ,   intersect with OL_Neighborhood  == ");						
-						}									
-					}				
-					Geometry designDevelopmentsUnion = (Geometry) overlayMap.get("designDevelopments");
-					if (designDevelopmentsUnion != null) {
-						if (designDevelopmentsUnion.intersects(propertyGeom)) {
-							sfb.set("OL_DesignDevelopment", Boolean.TRUE);
-							propertyOverlaysNum++;
-							System.out.print("  ,   intersect with OL_DesignDevelopment  == ");						
-						}									
-					}				
-					Geometry developPlansUnion = (Geometry) overlayMap.get("developPlans");
-					if (developPlansUnion != null) {
-						if (developPlansUnion.intersects(propertyGeom)) {
-							sfb.set("OL_DevelopmentPlan", Boolean.TRUE);
-							propertyOverlaysNum++;
-							System.out.print("  ,   intersect with OL_DevelopmentPlan  == ");						
-						}									
-					}				
-					Geometry parkingsUnion = (Geometry) overlayMap.get("parkings");
-					if (parkingsUnion != null) {
-						if (parkingsUnion.intersects(propertyGeom)) {
-							sfb.set("OL_Parking", Boolean.TRUE);
-							propertyOverlaysNum++;
-							System.out.print("  ,   intersect with OL_Parking  == ");						
-						}									
-					}					
-					Geometry bushfiresUnion = (Geometry) overlayMap.get("bushfires");
-					if (bushfiresUnion != null) {
-						if (bushfiresUnion.intersects(propertyGeom)) {
-							sfb.set("OL_Bushfire", Boolean.TRUE);
-							propertyOverlaysNum++;
-							System.out.print("  ,   intersect with OL_Bushfire  == ");						
-						}									
-					}				
-					Geometry erosionsUnion = (Geometry) overlayMap.get("erosions");
-					if (erosionsUnion != null) {
-						if (erosionsUnion.intersects(propertyGeom)) {
-							sfb.set("OL_Erosion", Boolean.TRUE);
-							propertyOverlaysNum++;
-							System.out.print("  ,   intersect with OL_Erosion  == ");						
-						}									
-					}				
-					Geometry vegprotectionsUnion = (Geometry) overlayMap.get("vegprotections");
-					if (vegprotectionsUnion != null) {
-						if (vegprotectionsUnion.intersects(propertyGeom)) {
-							sfb.set("OL_VegProtection", Boolean.TRUE);
-							propertyOverlaysNum++;
-							System.out.print("  ,   intersect with OL_VegProtection  == ");						
-						}									
-					}				
-					Geometry salinitysUnion = (Geometry) overlayMap.get("salinitys");
-					if (salinitysUnion != null) {
-						if (salinitysUnion.intersects(propertyGeom)) {
-							sfb.set("OL_Salinity", Boolean.TRUE);
-							propertyOverlaysNum++;
-							System.out.print("  ,   intersect with OL_Salinity  == ");						
-						}									
-					}				
-					Geometry contaminationsUnion = (Geometry) overlayMap.get("contaminations");
-					if (contaminationsUnion != null) {
-						if (contaminationsUnion.intersects(propertyGeom)) {
-							sfb.set("OL_Contamination", Boolean.TRUE);
-							propertyOverlaysNum++;
-							System.out.print("  ,   intersect with OL_Contamination  == ");						
-						}									
-					}				
-					Geometry envSignificancesUnion = (Geometry) overlayMap.get("envSignificances");
-					if (envSignificancesUnion != null) {
-						if (envSignificancesUnion.intersects(propertyGeom)) {
-							sfb.set("OL_EnvSignificance", Boolean.TRUE);
-							propertyOverlaysNum++;
-							System.out.print("  ,   intersect with OL_EnvSignificance  == ");						
-						}									
-					}				
-					Geometry envAuditsUnion = (Geometry) overlayMap.get("envAudits");
-					if (envAuditsUnion != null) {
-						if (envAuditsUnion.intersects(propertyGeom)) {
-							sfb.set("OL_EnvAudit", Boolean.TRUE);
-							propertyOverlaysNum++;
-							System.out.print("  ,   intersect with OL_EnvAudit  == ");						
-						}									
-					}
-					Geometry heritageUnion = (Geometry) overlayMap.get("heritages");
-					if (heritageUnion != null) {
-						if (heritageUnion.intersects(propertyGeom)) {
-							sfb.set("OL_Heritage", Boolean.TRUE);
-							propertyOverlaysNum++;
-							System.out.print("  ,   intersect with OL_Heritage  == ");
-
-						}									
-					}
-				}
-				
-				// **************** Create Styles ****************
-				if (!oldRulesList.contains(Integer.valueOf(propertyOverlaysNum))){					
- 					oldRules = geoServerService.createPotentialRule(oldRules, propertyOverlaysNum);
- 					oldRulesList.add(Integer.valueOf(propertyOverlaysNum));
-				}
-				
-				// **************** Intersections End ****************
-				sfb.set("OverlaysNum", propertyOverlaysNum);
-				SimpleFeature newFeature = sfb.buildFeature(null);
-				newList.add(newFeature);
-
-				i++;
-				System.out.println(i);
-				if (i == 1000) {
-					System.out.println("properties.size() == 10000");
-					SimpleFeatureCollection featureCollectionNew = new ListFeatureCollection(newFeatureType, newList);						 
-					exportService.featuresExportToShapeFile(sfb.getFeatureType(), featureCollectionNew,newFile, dropCreateSchema);
-					//						newList = new ArrayList<SimpleFeature>();
-					newList.clear();
-					i = 0;
-					dropCreateSchema = false;
-				}				
-			}//end while
-			
-			if (!newList.isEmpty()){
-				System.out.println("properties.size() < 1000");
-				SimpleFeatureCollection featureCollectionNew = new ListFeatureCollection(newFeatureType, newList);
-				exportService.featuresExportToShapeFile(sfb.getFeatureType(), featureCollectionNew,newFile, dropCreateSchema);
-			}
-			//end Ghazal
-		*/
 				
 		}catch(Exception e){
 			e.printStackTrace();
@@ -1494,40 +1307,6 @@ public class DevelopmentPotentialServiceImpl implements DevelopmentPotentialServ
 		}
 	}
 
-	//************************* overlayCollection  ***************************
-	/*
-	private SimpleFeatureCollection overlayCollection(Filter filter) throws IOException, HousingException {
-		SimpleFeatureCollection overlays = null;
-		SimpleFeatureIterator it = null;
-		try{
-			
-			Query codeListQuery = new Query();
-			codeListQuery.setPropertyNames(new String[] { inputLayersConfig.getPlanCodes_zoneCode(), inputLayersConfig.getPlanCodes_group1() });
-			codeListQuery.setFilter(filter);
-			planCodeList = planCodeListFc.getFeatures(codeListQuery);
-			System.out.println("planCodeList.size()===  "+planCodeList.size());
-			it = planCodeList.features();
-			List<Filter> match = new ArrayList<Filter>();
-			while (it.hasNext()) {
-				SimpleFeature zoneCode = it.next();
-				Object value = zoneCode.getAttribute(inputLayersConfig.getPlanOverlay_zoneCode());
-				filter = ff.equals(ff.property(inputLayersConfig.getPlanOverlay_zoneCode()), ff.literal(value));
-				match.add(filter);
-			}
-			Filter filterOverlay = ff.or(match);
-			Query overlayQuery = new Query();
-			overlayQuery.setFilter(filterOverlay);
-			overlays = planOverlayFc.getFeatures(overlayQuery);	
-			System.out.println("codeoverlaysList.size()===  "+ overlays.size());
-		}catch(Exception e){
-			e.printStackTrace();
-			throw new HousingException(Messages._ERROR_OVERLAY_FEATURELIST);
-		}finally{
-			it.close();
-		}
-		return overlays;
-	}
-	*/
 	private SimpleFeatureCollection overlayCollection(Filter filter) throws IOException, HousingException {
 		SimpleFeatureCollection overlays = null;
 		SimpleFeatureIterator it = null;
